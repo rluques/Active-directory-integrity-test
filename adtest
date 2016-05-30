@@ -1,0 +1,89 @@
+@ECHO OFF
+
+
+ECHO -------------------------------------------------------------------------------
+ECHO  DESCRIPTION: AD Test                          
+ECHO  LAST UPDATE.: 30/05/2016                                                     
+ECHO  VERSION:2.0                                                              
+ECHO  DEVELOPED BY:rluques 
+ECHO -------------------------------------------------------------------------------
+ECHO.
+
+REM C:
+REM CD\TEMP
+
+ECHO Get all information from computer...
+ECHO ------------------------------------------------------------------------------ > DATASERVER.TXT
+
+systeminfo >> DATASERVER.TXT 
+
+ECHO ------------------------------------------------------------------------------ >> DATASERVER.TXT
+ECHO MACHINE NAME: %COMPUTERNAME% >> DATASERVER.TXT
+ECHO PROCESSOR: %PROCESSOR_IDENTIFIER% >> DATASERVER.TXT
+ECHO ARCHITECTURE PROCESSOR: %PROCESSOR_ARCHITECTURE% >> DATASERVER.TXT
+ECHO CORES: %NUMBER_OF_PROCESSORS% >> DATASERVER.TXT
+ECHO OS: %OS% >> DATASERVER.TXT
+ECHO USER: %USERNAME% >> DATASERVER.TXT
+ECHO WINDOWS DIE: %WINDIR% >> DATASERVER.TXT
+ECHO ------------------------------------------------------------------------------ >> DATASERVER.TXT
+ECHO.
+
+nslookup %COMPUTERNAME% >> DATASERVER.TXT 
+
+ECHO ------------------------------------------------------------------------------ >> DATASERVER.TXT
+ECHO VERIFY PDC
+ECHO DATA PDC >> DATASERVER.TXT
+ECHO ------------------------------------------------------------------------------ >> DATASERVER.TXT
+netdom query pdc >> DATASERVER.TXT 
+ECHO ------------------------------------------------------------------------------ >> DATASERVER.TXT
+ECHO. >> DATASERVER.TXT
+
+ECHO VERIFY FSMO
+ECHO DATA FSMO >> DATASERVER.TXT
+ECHO ------------------------------------------------------------------------------ >> DATASERVER.TXT
+netdom query fsmo >> DATASERVER.TXT
+ECHO ------------------------------------------------------------------------------ >> DATASERVER.TXT
+ECHO. >> DATASERVER.TXT
+
+ECHO CHECKING TRUST
+ECHO TRUST RELATIONSHIP >> DATASERVER.TXT
+ECHO ------------------------------------------------------------------------------ >> DATASERVER.TXT
+netdom query trust >> DATASERVER.TXT 
+ECHO ------------------------------------------------------------------------------ >> DATASERVER.TXT
+ECHO.
+
+ECHO SERVERS VEERIFY DHCP
+ECHO SERVERS DHCP >> DATASERVER.TXT
+ECHO ------------------------------------------------------------------------------ >> DATASERVER.TXT
+netsh dhcp show server >> DATASERVER.TXT 
+ECHO ------------------------------------------------------------------------------ >> DATASERVER.TXT
+ECHO.
+
+ECHO STARTING DOMAIN SAFETY TEST
+dcdiag /test:CheckSecurityError /f:ADTEST.txt
+ECHO.
+
+ECHO ADVANCED TEST
+dcdiag /c /f:ADVANCEDTEST.txt
+ECHO.
+
+ECHO DNS TEST
+dcdiag /test:dns /f:DNSTEST.txt
+ECHO.
+
+ECHO GETTING STARTED COMPREHENSIVE TEST - WITH EXTENDED INFORMATION
+dcdiag /v /f:COMPREHENSIVETEST.txt
+ECHO.	
+
+ECHO CHECKING REPLICATION STATUS
+repadmin /replsum /errorsonly > REPLICATION.TXT
+ECHO ------------------------------------------------------------------------------ >> REPLICATION.TXT
+repadmin /showrepl >> REPLICATION.TXT
+ECHO.
+
+
+ECHO FILES CREATED IN C:\TEMP
+ECHO.
+ECHO DONE!!!
+ECHO PRESS ANY KEY TO EXIT...
+PAUSE > tmp.txt
